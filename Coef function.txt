@@ -1,0 +1,36 @@
+def create_time_series_features_predict_well_count(df, target_col='api_count', lags=[1,2,3,6,12]):
+    df_features = df.copy()
+    df_features['date'] = pd.to_datetime(df_features[['year', 'month']].assign(day=1))
+    df_features = df_features.set_index('date').sort_index()
+
+    # Lag features
+    for lag in lags:
+        df_features[f'lag_{lag}'] = df_features[target_col].shift(lag)
+
+    # Rolling features (SHIFTED!)
+    for window in [3, 6, 12]:
+        df_features[f'rolling_mean_{window}'] = (
+            df_features[target_col].shift(1).rolling(window).mean()
+        )
+        df_features[f'rolling_std_{window}'] = (
+            df_features[target_col].shift(1).rolling(window).std()
+        )
+
+    # Momentum (SHIFTED!)
+    df_features['diff_1'] = df_features[target_col].diff(1).shift(1)
+    df_features['pct_change_1'] = df_features[target_col].pct_change(1).shift(1)
+
+    # Seasonality (safe)
+    df_features['month_feature'] = df_features['month']
+    df_features['month_sin'] = np.sin(2 * np.pi * df_features['month'] / 12)
+    df_features['month_cos'] = np.cos(2 * np.pi * df_features['month'] / 12)
+
+    df_features['predicted_api_count'] =  27.1595 + 0.298590 * df_features['lag_1'] +0.248237 * df_features['lag_2'] +0.017667 * df_features['lag_3'] -0.107230 * df_features['lag_6'] +0.130865 * df_features['lag_12'] +0.188165 * df_features['rolling_mean_3'] -0.259109 * df_features['rolling_std_3'] +0.580102 * df_features['rolling_mean_6'] +0.034850 * df_features['rolling_std_6'] -0.431389 * df_features['rolling_mean_12'] -0.707113 * df_features['rolling_std_12'] +0.050353 * df_features['diff_1'] +8.367841 * df_features['pct_change_1'] +0.633624 * df_features['month_feature'] +2.814061 * df_features['month_sin'] -12.774921 * df_features['month_cos']
+    df_features['aggressive_api_count'] = df_features['predicted_api_count']*1.485
+    df_features['dormant_api_count'] = df_features['predicted_api_count']*0.674
+
+    # df_features.to_excel('ts_features_1.xlsx')
+
+
+
+    return df_features

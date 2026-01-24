@@ -1,0 +1,44 @@
+api_count = 27.1595 +0.298590 * lag_1  +0.248237 * lag_2 
+
+
+  +0.017667 * lag_3 
+
+
+  -0.107230 * lag_6 
+
+
+  +0.130865 * lag_12 
+
+
+  +0.188165 * rolling_mean_3 
+
+
+  -0.259109 * rolling_std_3 
+
+
+  +0.580102 * rolling_mean_6 
+
+
+  +0.034850 * rolling_std_6 
+
+
+  -0.431389 * rolling_mean_12 
+
+
+  -0.707113 * rolling_std_12 
+
+
+  +0.050353 * diff_1 
+
+
+  +8.367841 * pct_change_1 
+
+
+  +0.633624 * month_feature 
+
+
+  +2.814061 * month_sin 
+
+
+  -12.774921 * month_cos
+ 
